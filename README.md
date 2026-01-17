@@ -1,4 +1,4 @@
-# Crop
+# Image Crop
 
 Ferramenta simples para recortar imagens e GIFs animados.
 
