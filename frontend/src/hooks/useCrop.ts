@@ -41,6 +41,7 @@ export interface UseCropReturn {
   setGifSettings: (settings: GifSettings) => void;
   // Preview
   preview: PreviewResult | null;
+  clearPreview: () => void;
   originalSize: number;
   originalSizeFormatted: string;
 }
@@ -324,6 +325,10 @@ export function useCrop(): UseCropReturn {
     link.click();
   }, [preview, isGif, imageType, fileName]);
 
+  const clearPreview = useCallback(() => {
+    setPreview(null);
+  }, []);
+
   return {
     crop,
     setCrop,
@@ -349,6 +354,7 @@ export function useCrop(): UseCropReturn {
     gifSettings,
     setGifSettings,
     preview,
+    clearPreview,
     originalSize,
     originalSizeFormatted,
   };
