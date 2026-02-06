@@ -11,7 +11,7 @@ import {
   CropSidebar,
   CropPreviewModal,
   MobileFloatingButtons,
-} from "./Crop";
+} from "./Cropper";
 import type {
   Crop,
   PixelCrop,
