@@ -1,6 +1,6 @@
 import { X, Download, FileImage, FileDown } from "lucide-react";
-import { formatFileSize } from "../../utils/gifProcessor";
-import type { CropPreviewModalProps } from "../../types";
+import { formatFileSize } from "../../../utils/gifProcessor";
+import type { CropPreviewModalProps } from "../../../types";
 
 export function CropPreviewModal({
   preview,

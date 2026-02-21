@@ -1,6 +1,6 @@
 import { Crop as CropIcon, ChevronLeft, Menu } from "lucide-react";
-import { formatFileSize } from "../../utils/gifProcessor";
-import type { CropHeaderProps } from "../../types";
+import { formatFileSize } from "../../../utils/gifProcessor";
+import type { CropHeaderProps } from "../../../types";
 
 export function CropHeader({
   isGif,

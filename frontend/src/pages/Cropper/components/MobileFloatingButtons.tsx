@@ -1,5 +1,5 @@
 import { Crop as CropIcon, Settings, Loader2 } from "lucide-react";
-import type { MobileFloatingButtonsProps } from "../../types";
+import type { MobileFloatingButtonsProps } from "../../../types";
 
 export function MobileFloatingButtons({
   canGenerate,

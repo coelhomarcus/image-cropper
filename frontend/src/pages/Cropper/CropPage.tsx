@@ -4,22 +4,22 @@ import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { Upload } from "lucide-react";
 
-import { getCroppedImage, getFileExtension } from "../utils/imageProcessor";
-import { cropGif, formatFileSize } from "../utils/gifProcessor";
-import { ASPECT_RATIOS } from "../hooks/useCrop";
-import {
-  CropHeader,
-  CropSidebar,
-  CropPreviewModal,
-  MobileFloatingButtons,
-} from "./Cropper";
+import { getCroppedImage, getFileExtension } from "../../utils/imageProcessor";
+import { cropGif, formatFileSize } from "../../utils/gifProcessor";
+import { ASPECT_RATIOS } from "../../hooks/useCrop";
+
+import { CropHeader } from "./components/CropHeader";
+import { CropSidebar } from "./components/CropSidebar";
+import { CropPreviewModal } from "./components/CropPreviewModal";
+import { MobileFloatingButtons } from "./components/MobileFloatingButtons";
+
 import type {
   Crop,
   PixelCrop,
   GifSettings,
   PreviewResult,
   AspectRatioKey,
-} from "../types";
+} from "../../types";
 
 export function CropPage() {
   const navigate = useNavigate();

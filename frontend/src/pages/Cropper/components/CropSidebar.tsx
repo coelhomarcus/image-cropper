@@ -6,9 +6,9 @@ import {
   Crop as CropIcon,
   Loader2,
 } from "lucide-react";
-import { ASPECT_RATIOS } from "../../hooks/useCrop";
-import { formatFileSize } from "../../utils/gifProcessor";
-import type { CropSidebarProps, AspectRatioKey } from "../../types";
+import { ASPECT_RATIOS } from "../../../hooks/useCrop";
+import { formatFileSize } from "../../../utils/gifProcessor";
+import type { CropSidebarProps, AspectRatioKey } from "../../../types";
 
 export function CropSidebar({
   isOpen,

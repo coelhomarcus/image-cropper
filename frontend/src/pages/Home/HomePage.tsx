@@ -1,6 +1,9 @@
 import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Footer, DragOverlay, UploadCard, FeatureGrid } from "./components";
+import { Footer } from "./components/Footer";
+import { DragOverlay } from "./components/DragOverlay";
+import { UploadCard } from "./components/UploadCard";
+import { FeatureGrid } from "./components/FeatureGrid";
 
 export function HomePage() {
   const navigate = useNavigate();
