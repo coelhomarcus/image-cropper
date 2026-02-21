@@ -1,5 +1,5 @@
 import { Crop as CropIcon, Settings, Loader2 } from "lucide-react";
-import type { MobileFloatingButtonsProps } from "../../types";
+import type { MobileFloatingButtonsProps } from "@/types";
 
 export function MobileFloatingButtons({
   canGenerate,
@@ -12,7 +12,7 @@ export function MobileFloatingButtons({
       <button
         onClick={onGenerate}
         disabled={!canGenerate || isProcessing}
-        className="w-14 h-14 bg-green-600 hover:bg-green-700 text-white rounded-full shadow-lg flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-14 h-14 bg-green-600 hover:bg-green-700 text-white flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isProcessing ? (
           <Loader2 className="w-6 h-6 animate-spin" />
@@ -23,7 +23,7 @@ export function MobileFloatingButtons({
 
       <button
         onClick={onOpenSettings}
-        className="w-14 h-14 bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-full shadow-lg flex items-center justify-center transition-colors"
+        className="w-14 h-14 bg-[#3b82f6] hover:bg-[#2563eb] text-white flex items-center justify-center transition-colors"
       >
         <Settings className="w-6 h-6" />
       </button>

@@ -22,8 +22,11 @@ export function getCroppedImage(
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
 
-    canvas.width = crop.width;
-    canvas.height = crop.height;
+    const actualWidth = Math.round(crop.width * scaleX);
+    const actualHeight = Math.round(crop.height * scaleY);
+
+    canvas.width = actualWidth;
+    canvas.height = actualHeight;
 
     ctx.drawImage(
       image,
@@ -33,8 +36,8 @@ export function getCroppedImage(
       crop.height * scaleY,
       0,
       0,
-      crop.width,
-      crop.height,
+      actualWidth,
+      actualHeight,
     );
 
     canvas.toBlob(

@@ -47,6 +47,8 @@ export interface CropSidebarProps {
 
   cropX: number;
   cropY: number;
+  onCropXChange: (value: string) => void;
+  onCropYChange: (value: string) => void;
 
   onReset: () => void;
 

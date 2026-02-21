@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="py-3 md:py-4 text-center text-xs text-[#6b7280]">
+    <footer className="py-3 md:py-4 text-center text-xs text-[#666666]">
       by{" "}
       <a
         href="https://marcuscoelho.com"
