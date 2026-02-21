@@ -1,6 +1,6 @@
 import { X, Download, FileImage, FileDown } from "lucide-react";
-import { formatFileSize } from "../../../utils/gifProcessor";
-import type { CropPreviewModalProps } from "../../../types";
+import { formatFileSize } from "@/utils/gifProcessor";
+import type { CropPreviewModalProps } from "@/types";
 
 export function CropPreviewModal({
   preview,
@@ -35,7 +35,7 @@ export function CropPreviewModal({
               <img
                 src={preview.url}
                 alt="Preview"
-                className="max-w-full max-h-[50vh] md:max-w-[400px] md:max-h-[400px] rounded-md"
+                className="max-w-full max-h-[50vh] md:max-w-100 md:max-h-100 rounded-md"
               />
             </div>
 

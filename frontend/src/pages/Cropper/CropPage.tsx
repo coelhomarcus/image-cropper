@@ -4,10 +4,17 @@ import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { Upload } from "lucide-react";
 
-import { getCroppedImage, getFileExtension } from "../../utils/imageProcessor";
-import { cropGif, formatFileSize } from "../../utils/gifProcessor";
-import { ASPECT_RATIOS } from "../../hooks/useCrop";
+import { getCroppedImage, getFileExtension } from "@/utils/imageProcessor";
+import { cropGif, formatFileSize } from "@/utils/gifProcessor";
+import { ASPECT_RATIOS, DEFAULT_GIF_SETTINGS } from "@/utils/constants";
 
+import {
+  loadCropSession,
+  saveCropSession,
+  clearCropSession,
+} from "@/utils/sessionStorage";
+
+import { useDragDrop } from "@/hooks/useDragDrop";
 import { CropHeader } from "./components/CropHeader";
 import { CropSidebar } from "./components/CropSidebar";
 import { CropPreviewModal } from "./components/CropPreviewModal";
@@ -19,7 +26,7 @@ import type {
   GifSettings,
   PreviewResult,
   AspectRatioKey,
-} from "../../types";
+} from "@/types";
 
 export function CropPage() {
   const navigate = useNavigate();
@@ -46,17 +53,16 @@ export function CropPage() {
   const [preview, setPreview] = useState<PreviewResult | null>(null);
 
   const [gifSettings, setGifSettings] = useState<GifSettings>({
-    colors: 256,
-    skipFrames: 1,
+    ...DEFAULT_GIF_SETTINGS,
   });
   const [showGifSettings, setShowGifSettings] = useState(false);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const dragCounter = useRef(0);
 
   const imgRef = useRef<HTMLImageElement>(null);
   const fileRef = useRef<File | null>(null);
+
+  // --- Scale helpers ---
 
   const getScale = () => {
     if (!imgRef.current) return { scaleX: 1, scaleY: 1 };
@@ -73,28 +79,26 @@ export function CropPage() {
   const cropHeight = cropHeightDisplay * scaleY;
   const canGenerate = completedCrop && !isProcessing;
 
-  useEffect(() => {
-    const storedImage = sessionStorage.getItem("cropImage");
-    const storedFileName = sessionStorage.getItem("cropFileName");
-    const storedFileType = sessionStorage.getItem("cropFileType");
-    const storedFileSize = sessionStorage.getItem("cropFileSize");
+  // --- Session loading ---
 
-    if (!storedImage) {
+  useEffect(() => {
+    const session = loadCropSession();
+    if (!session) {
       navigate("/");
       return;
     }
 
-    setImageSrc(storedImage);
-    setFileName(storedFileName?.replace(/\.[^/.]+$/, "") || "cropped");
-    setFileType(storedFileType || "image/jpeg");
-    setIsGif(storedFileType === "image/gif");
-    setOriginalSize(parseInt(storedFileSize || "0", 10));
+    setImageSrc(session.image);
+    setFileName(session.fileName.replace(/\.[^/.]+$/, "") || "cropped");
+    setFileType(session.fileType);
+    setIsGif(session.fileType === "image/gif");
+    setOriginalSize(session.fileSize);
 
-    if (storedFileType === "image/gif" && storedImage) {
-      fetch(storedImage)
+    if (session.fileType === "image/gif") {
+      fetch(session.image)
         .then((res) => res.blob())
         .then((blob) => {
-          fileRef.current = new File([blob], storedFileName || "image.gif", {
+          fileRef.current = new File([blob], session.fileName || "image.gif", {
             type: "image/gif",
           });
         });
@@ -115,6 +119,8 @@ export function CropPage() {
       }
     }
   }, [imageSrc]);
+
+  // --- Crop helpers ---
 
   const createCenteredCrop = useCallback((ratio: number | undefined) => {
     if (!imgRef.current) return;
@@ -145,6 +151,44 @@ export function CropPage() {
     setCrop(newCrop);
     setCompletedCrop({ unit: "px", x, y, width: cropW, height: cropH });
   }, []);
+
+  const setCropDimensions = useCallback(
+    (width: number, height: number) => {
+      if (!imgRef.current) return;
+      const img = imgRef.current;
+      const maxWidth = img.width;
+      const maxHeight = img.height;
+
+      const clampedWidth = Math.min(Math.max(1, width), maxWidth);
+      const clampedHeight = Math.min(Math.max(1, height), maxHeight);
+
+      const x = crop?.x ?? 0;
+      const y = crop?.y ?? 0;
+      const finalX = Math.min(x, maxWidth - clampedWidth);
+      const finalY = Math.min(y, maxHeight - clampedHeight);
+
+      const newCrop: Crop = {
+        unit: "px",
+        x: Math.max(0, finalX),
+        y: Math.max(0, finalY),
+        width: clampedWidth,
+        height: clampedHeight,
+      };
+
+      setCrop(newCrop);
+      setCompletedCrop({
+        unit: "px",
+        x: Math.max(0, finalX),
+        y: Math.max(0, finalY),
+        width: clampedWidth,
+        height: clampedHeight,
+      });
+      setPreview(null);
+    },
+    [crop?.x, crop?.y],
+  );
+
+  // --- Aspect ratio handlers ---
 
   const handleAspectChange = (key: AspectRatioKey) => {
     setSelectedAspect(key);
@@ -188,41 +232,7 @@ export function CropPage() {
     }
   };
 
-  const setCropDimensions = useCallback(
-    (width: number, height: number) => {
-      if (!imgRef.current) return;
-      const img = imgRef.current;
-      const maxWidth = img.width;
-      const maxHeight = img.height;
-
-      const clampedWidth = Math.min(Math.max(1, width), maxWidth);
-      const clampedHeight = Math.min(Math.max(1, height), maxHeight);
-
-      const x = crop?.x ?? 0;
-      const y = crop?.y ?? 0;
-      const finalX = Math.min(x, maxWidth - clampedWidth);
-      const finalY = Math.min(y, maxHeight - clampedHeight);
-
-      const newCrop: Crop = {
-        unit: "px",
-        x: Math.max(0, finalX),
-        y: Math.max(0, finalY),
-        width: clampedWidth,
-        height: clampedHeight,
-      };
-
-      setCrop(newCrop);
-      setCompletedCrop({
-        unit: "px",
-        x: Math.max(0, finalX),
-        y: Math.max(0, finalY),
-        width: clampedWidth,
-        height: clampedHeight,
-      });
-      setPreview(null);
-    },
-    [crop?.x, crop?.y],
-  );
+  // --- Dimension & position handlers ---
 
   const handleWidthChange = (value: string) => {
     setWidthInput(value);
@@ -284,7 +294,9 @@ export function CropPage() {
     setPreview(null);
   };
 
-  const loadNewImage = (file: File) => {
+  // --- Image loading (drag-drop replace) ---
+
+  const loadNewImage = useCallback((file: File) => {
     if (!file.type.startsWith("image/")) return;
 
     setFileType(file.type);
@@ -297,7 +309,7 @@ export function CropPage() {
     setPreview(null);
     setWidthInput("");
     setHeightInput("");
-    setGifSettings({ colors: 256, skipFrames: 1 });
+    setGifSettings({ ...DEFAULT_GIF_SETTINGS });
 
     if (file.type === "image/gif") {
       fileRef.current = file;
@@ -307,46 +319,16 @@ export function CropPage() {
     reader.onload = () => {
       const dataUrl = reader.result as string;
       setImageSrc(dataUrl);
-      sessionStorage.setItem("cropImage", dataUrl);
-      sessionStorage.setItem("cropFileName", file.name);
-      sessionStorage.setItem("cropFileType", file.type);
-      sessionStorage.setItem("cropFileSize", String(file.size));
+      saveCropSession(dataUrl, file);
     };
     reader.readAsDataURL(file);
-  };
+  }, []);
 
-  const handleDragEnter = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    dragCounter.current++;
-    if (e.dataTransfer.types.includes("Files")) {
-      setIsDragging(true);
-    }
-  };
+  const { isDragging, dragProps } = useDragDrop({
+    onFileDrop: loadNewImage,
+  });
 
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    dragCounter.current--;
-    if (dragCounter.current === 0) {
-      setIsDragging(false);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    dragCounter.current = 0;
-
-    const file = e.dataTransfer.files?.[0];
-    if (file) loadNewImage(file);
-  };
+  // --- Reset & clear ---
 
   const handleReset = () => {
     setWidthInput("");
@@ -361,12 +343,11 @@ export function CropPage() {
   };
 
   const handleClearImage = () => {
-    sessionStorage.removeItem("cropImage");
-    sessionStorage.removeItem("cropFileName");
-    sessionStorage.removeItem("cropFileType");
-    sessionStorage.removeItem("cropFileSize");
+    clearCropSession();
     navigate("/");
   };
+
+  // --- Processing ---
 
   const generatePreview = async () => {
     if (!completedCrop || !imgRef.current) return;
@@ -413,6 +394,8 @@ export function CropPage() {
     link.click();
   };
 
+  // --- Render ---
+
   if (!imageSrc) {
     return null;
   }
@@ -420,10 +403,7 @@ export function CropPage() {
   return (
     <div
       className="h-screen bg-[#0d0e14] flex flex-col overflow-hidden relative"
-      onDragEnter={handleDragEnter}
-      onDragLeave={handleDragLeave}
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
+      {...dragProps}
     >
       <CropHeader
         isGif={isGif}

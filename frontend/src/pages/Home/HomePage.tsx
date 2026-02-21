@@ -1,5 +1,7 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
+import { useDragDrop } from "@/hooks/useDragDrop";
+import { saveCropSession } from "@/utils/sessionStorage";
 import { Footer } from "./components/Footer";
 import { DragOverlay } from "./components/DragOverlay";
 import { UploadCard } from "./components/UploadCard";
@@ -8,63 +10,54 @@ import { FeatureGrid } from "./components/FeatureGrid";
 export function HomePage() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const dragCounterRef = useRef(0);
+
+  const processFile = useCallback(
+    (file: File) => {
+      if (!file.type.startsWith("image/")) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        saveCropSession(reader.result as string, file);
+        navigate("/crop");
+      };
+      reader.readAsDataURL(file);
+    },
+    [navigate],
+  );
+
+  const { isDragging, handlers } = useDragDrop({
+    onFileDrop: processFile,
+    listenOnDocument: true,
+  });
 
   useEffect(() => {
-    const handleDragEnter = (e: DragEvent) => {
-      e.preventDefault();
-      dragCounterRef.current++;
-      if (e.dataTransfer?.types.includes("Files")) {
-        setIsDragging(true);
-      }
-    };
-
-    const handleDragLeave = (e: DragEvent) => {
-      e.preventDefault();
-      dragCounterRef.current--;
-      if (dragCounterRef.current === 0) {
-        setIsDragging(false);
-      }
-    };
-
-    const handleDragOver = (e: DragEvent) => {
-      e.preventDefault();
-    };
-
-    const handleDrop = (e: DragEvent) => {
-      e.preventDefault();
-      dragCounterRef.current = 0;
-      setIsDragging(false);
-    };
-
-    document.addEventListener("dragenter", handleDragEnter);
-    document.addEventListener("dragleave", handleDragLeave);
-    document.addEventListener("dragover", handleDragOver);
-    document.addEventListener("drop", handleDrop);
+    const doc = document;
+    doc.addEventListener(
+      "dragenter",
+      handlers.handleDragEnter as EventListener,
+    );
+    doc.addEventListener(
+      "dragleave",
+      handlers.handleDragLeave as EventListener,
+    );
+    doc.addEventListener("dragover", handlers.handleDragOver as EventListener);
+    doc.addEventListener("drop", handlers.handleDrop as EventListener);
 
     return () => {
-      document.removeEventListener("dragenter", handleDragEnter);
-      document.removeEventListener("dragleave", handleDragLeave);
-      document.removeEventListener("dragover", handleDragOver);
-      document.removeEventListener("drop", handleDrop);
+      doc.removeEventListener(
+        "dragenter",
+        handlers.handleDragEnter as EventListener,
+      );
+      doc.removeEventListener(
+        "dragleave",
+        handlers.handleDragLeave as EventListener,
+      );
+      doc.removeEventListener(
+        "dragover",
+        handlers.handleDragOver as EventListener,
+      );
+      doc.removeEventListener("drop", handlers.handleDrop as EventListener);
     };
-  }, []);
-
-  const processFile = (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => {
-      sessionStorage.setItem("cropImage", reader.result as string);
-      sessionStorage.setItem("cropFileName", file.name);
-      sessionStorage.setItem("cropFileType", file.type);
-      sessionStorage.setItem("cropFileSize", file.size.toString());
-      navigate("/crop");
-    };
-    reader.readAsDataURL(file);
-  };
+  }, [handlers]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -72,23 +65,8 @@ export function HomePage() {
     }
   };
 
-  const handleDropOnPage = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    dragCounterRef.current = 0;
-    setIsDragging(false);
-
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
-      processFile(files[0]);
-    }
-  };
-
   return (
-    <div
-      className="min-h-screen bg-[#0d0e14] flex flex-col relative"
-      onDrop={handleDropOnPage}
-    >
+    <div className="min-h-screen bg-[#0d0e14] flex flex-col relative">
       <DragOverlay isDragging={isDragging} />
 
       <main className="flex-1 flex items-center justify-center p-4 md:p-6">
