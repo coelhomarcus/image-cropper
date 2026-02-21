@@ -1,12 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import {
-  Header,
-  Footer,
-  DragOverlay,
-  UploadCard,
-  FeatureGrid,
-} from "./components";
+import { Footer, DragOverlay, UploadCard, FeatureGrid } from "./components";
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -93,7 +87,6 @@ export function HomePage() {
       onDrop={handleDropOnPage}
     >
       <DragOverlay isDragging={isDragging} />
-      <Header />
 
       <main className="flex-1 flex items-center justify-center p-4 md:p-6">
         <div className="max-w-xl w-full">

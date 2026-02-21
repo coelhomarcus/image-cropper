@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
+import { Upload } from "lucide-react";
 
 import { getCroppedImage, getFileExtension } from "../utils/imageProcessor";
 import { cropGif, formatFileSize } from "../utils/gifProcessor";
@@ -51,6 +52,8 @@ export function CropPage() {
   const [showGifSettings, setShowGifSettings] = useState(false);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragCounter = useRef(0);
 
   const imgRef = useRef<HTMLImageElement>(null);
   const fileRef = useRef<File | null>(null);
@@ -281,6 +284,70 @@ export function CropPage() {
     setPreview(null);
   };
 
+  const loadNewImage = (file: File) => {
+    if (!file.type.startsWith("image/")) return;
+
+    setFileType(file.type);
+    setIsGif(file.type === "image/gif");
+    setOriginalSize(file.size);
+    setFileName(file.name.replace(/\.[^/.]+$/, ""));
+
+    setCrop(undefined);
+    setCompletedCrop(undefined);
+    setPreview(null);
+    setWidthInput("");
+    setHeightInput("");
+    setGifSettings({ colors: 256, skipFrames: 1 });
+
+    if (file.type === "image/gif") {
+      fileRef.current = file;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      setImageSrc(dataUrl);
+      sessionStorage.setItem("cropImage", dataUrl);
+      sessionStorage.setItem("cropFileName", file.name);
+      sessionStorage.setItem("cropFileType", file.type);
+      sessionStorage.setItem("cropFileSize", String(file.size));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current++;
+    if (e.dataTransfer.types.includes("Files")) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current--;
+    if (dragCounter.current === 0) {
+      setIsDragging(false);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    dragCounter.current = 0;
+
+    const file = e.dataTransfer.files?.[0];
+    if (file) loadNewImage(file);
+  };
+
   const handleReset = () => {
     setWidthInput("");
     setHeightInput("");
@@ -351,7 +418,13 @@ export function CropPage() {
   }
 
   return (
-    <div className="h-screen bg-[#0d0e14] flex flex-col overflow-hidden">
+    <div
+      className="h-screen bg-[#0d0e14] flex flex-col overflow-hidden relative"
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
       <CropHeader
         isGif={isGif}
         fileType={fileType}
@@ -431,6 +504,20 @@ export function CropPage() {
           onClose={() => setPreview(null)}
           onDownload={downloadResult}
         />
+      )}
+
+      {isDragging && (
+        <div className="absolute inset-0 z-100 bg-[#0d0e14]/80 flex items-center justify-center pointer-events-none">
+          <div className="border-2 border-dashed border-[#3b82f6] rounded-xl p-12 text-center">
+            <Upload className="w-12 h-12 text-[#3b82f6] mx-auto mb-3" />
+            <p className="text-[#f3f4f6] text-lg font-medium">
+              Solte a imagem aqui
+            </p>
+            <p className="text-[#6b7280] text-sm mt-1">
+              A imagem atual será substituída
+            </p>
+          </div>
+        </div>
       )}
     </div>
   );
