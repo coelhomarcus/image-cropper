@@ -23,9 +23,6 @@ export function CropHeader({
 
         <div className="flex items-center gap-2">
           <CropIcon className="w-5 h-5 md:w-6 md:h-6 text-[#3b82f6]" />
-          <span className="text-base md:text-lg font-semibold text-[#ededed] hidden sm:inline">
-            Recortar Imagem
-          </span>
         </div>
 
         <div className="hidden md:block h-6 w-px bg-[#262626]" />

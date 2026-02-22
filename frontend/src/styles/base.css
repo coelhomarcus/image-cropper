@@ -1,0 +1,15 @@
+html,
+body {
+  background-color: #000000;
+  color: #ededed;
+  min-height: 100vh;
+}
+
+a,
+button {
+  cursor: pointer !important;
+}
+
+#root {
+  min-height: 100vh;
+}

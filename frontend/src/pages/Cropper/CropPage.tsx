@@ -451,7 +451,7 @@ export function CropPage() {
           onGenerate={generatePreview}
         />
 
-        <div className="flex-1 bg-black flex items-center justify-center p-2 md:p-4 overflow-auto">
+        <div className="flex-1 background *:z-20 flex items-center justify-center p-2 md:p-4 overflow-auto">
           <ReactCrop
             crop={crop}
             onChange={(c) => setCrop(c)}

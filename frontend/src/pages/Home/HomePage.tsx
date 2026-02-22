@@ -66,10 +66,10 @@ export function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col relative">
+    <div className="min-h-screen flex flex-col relative background">
       <DragOverlay isDragging={isDragging} />
 
-      <main className="flex-1 flex items-center justify-center p-4 md:p-6">
+      <main className="flex-1 flex items-center justify-center p-4 md:p-6 z-20">
         <div className="max-w-xl w-full">
           <UploadCard
             fileInputRef={fileInputRef}

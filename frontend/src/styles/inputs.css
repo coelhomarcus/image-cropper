@@ -1,0 +1,55 @@
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.dark-input {
+  background-color: #141414;
+  border: 1px solid #262626;
+  color: #ededed;
+  border-radius: 0;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  transition: border-color 0.15s ease;
+}
+
+.dark-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.dark-input::placeholder {
+  color: #666666;
+}
+
+.dark-select {
+  background-color: #141414;
+  border: 1px solid #262626;
+  color: #ededed;
+  border-radius: 0;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23888888'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1.25rem;
+  padding-right: 2.5rem;
+}
+
+.dark-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.dark-select option {
+  background-color: #0a0a0a;
+  color: #ededed;
+}
