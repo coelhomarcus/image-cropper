@@ -15,7 +15,7 @@ export function CropPreviewModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="max-w-4xl w-full max-h-full overflow-auto">
+      <div className="max-w-2xl w-full max-h-full overflow-auto">
         <div className="bg-[#0a0a0a] border border-[#262626] p-4 md:p-6 relative">
           <button
             onClick={onClose}
@@ -24,14 +24,14 @@ export function CropPreviewModal({
             <X className="w-5 h-5" />
           </button>
 
-          <div className="text-center mb-4 md:mb-6">
+          <div className="text-center mb-2">
             <h3 className="text-base md:text-lg font-semibold text-[#ededed]">
               Recortado com sucesso!
             </h3>
           </div>
 
           <div className="flex flex-col items-center gap-4 md:gap-6">
-            <div className="bg-black p-2">
+            <div className="p-2">
               <img
                 src={preview.url}
                 alt="Preview"
