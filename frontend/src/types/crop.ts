@@ -1,7 +1,6 @@
 import type { Crop, PixelCrop } from "react-image-crop";
 
 export interface GifSettings {
-  colors: number;
   skipFrames: number;
 }
 

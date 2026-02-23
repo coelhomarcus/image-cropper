@@ -6,7 +6,7 @@ import { Upload } from "lucide-react";
 
 import { getCroppedImage, getExtensionForMime } from "@/utils/imageProcessor";
 import { cropGif, formatFileSize, isAnimatedWebP } from "@/utils/gifProcessor";
-import { ASPECT_RATIOS, DEFAULT_GIF_SETTINGS } from "@/utils/constants";
+import { ASPECT_RATIOS } from "@/utils/constants";
 
 import {
   loadCropSession,
@@ -24,7 +24,6 @@ import { MobileFloatingButtons } from "./components/MobileFloatingButtons";
 import type {
   Crop,
   PixelCrop,
-  GifSettings,
   PreviewResult,
   AspectRatioKey,
   OutputFormat,
@@ -54,10 +53,7 @@ export function CropPage() {
   const [processingProgress, setProcessingProgress] = useState(0);
   const [preview, setPreview] = useState<PreviewResult | null>(null);
 
-  const [gifSettings, setGifSettings] = useState<GifSettings>({
-    ...DEFAULT_GIF_SETTINGS,
-  });
-  const [showGifSettings, setShowGifSettings] = useState(false);
+  const [skipFrames, setSkipFrames] = useState(1);
 
   const [outputFormat, setOutputFormat] = useState<OutputFormat>("original");
 
@@ -334,7 +330,7 @@ export function CropPage() {
     setPreview(null);
     setWidthInput("");
     setHeightInput("");
-    setGifSettings({ ...DEFAULT_GIF_SETTINGS });
+    setSkipFrames(1);
     setOutputFormat("original");
 
     const animated = file.type === "image/gif" || await isAnimatedWebP(file);
@@ -404,8 +400,7 @@ export function CropPage() {
       if (isGif && fileRef.current && outputFormat === "original") {
         result = await cropGif(imgRef.current, completedCrop, fileRef.current, {
           onProgress: (p) => setProcessingProgress(p),
-          colors: gifSettings.colors,
-          skipFrames: gifSettings.skipFrames,
+          skipFrames: skipFrames,
         });
       } else {
         result = await getCroppedImage(
@@ -491,10 +486,6 @@ export function CropPage() {
           onReset={handleReset}
           outputFormat={outputFormat}
           onOutputFormatChange={handleOutputFormatChange}
-          gifSettings={gifSettings}
-          setGifSettings={setGifSettings}
-          showGifSettings={showGifSettings}
-          setShowGifSettings={setShowGifSettings}
           isProcessing={isProcessing}
           processingProgress={processingProgress}
           canGenerate={!!canGenerate}

@@ -1,7 +1,6 @@
 import type { GifSettings } from "../types";
 
 export const DEFAULT_GIF_SETTINGS: GifSettings = {
-  colors: 256,
   skipFrames: 1,
 };
 

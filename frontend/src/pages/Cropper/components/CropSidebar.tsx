@@ -1,8 +1,6 @@
 import {
   X,
   RotateCcw,
-  ChevronDown,
-  Settings,
   Crop as CropIcon,
   Loader2,
 } from "lucide-react";
@@ -37,10 +35,6 @@ export function CropSidebar({
   onReset,
   outputFormat,
   onOutputFormatChange,
-  gifSettings,
-  setGifSettings,
-  showGifSettings,
-  setShowGifSettings,
   isProcessing,
   processingProgress,
   canGenerate,
@@ -245,45 +239,7 @@ export function CropSidebar({
             Resetar
           </button>
 
-          {isGif && (
-            <section className="border-t border-[#262626] pt-4">
-              <button
-                onClick={() => setShowGifSettings(!showGifSettings)}
-                className="flex items-center gap-2 text-sm text-[#888888] hover:text-[#ededed] w-full"
-              >
-                <Settings className="w-4 h-4" />
-                Configurações da Animação
-                <ChevronDown
-                  className={`w-4 h-4 ml-auto transition-transform ${showGifSettings ? "rotate-180" : ""}`}
-                />
-              </button>
-              {showGifSettings && (
-                <div className="mt-3">
-                  <label className="block text-[#666666] text-xs mb-2">
-                    Cores: {gifSettings.colors}
-                  </label>
-                  <input
-                    type="range"
-                    min="16"
-                    max="256"
-                    step="16"
-                    value={gifSettings.colors}
-                    onChange={(e) =>
-                      setGifSettings({
-                        ...gifSettings,
-                        colors: parseInt(e.target.value),
-                      })
-                    }
-                    className="w-full accent-[#3b82f6]"
-                  />
-                  <div className="flex justify-between text-xs text-[#666666] mt-1">
-                    <span>16 (pequeno)</span>
-                    <span>256 (qualidade)</span>
-                  </div>
-                </div>
-              )}
-            </section>
-          )}
+
         </div>
 
         <div className="p-4 border-t border-[#262626]">
