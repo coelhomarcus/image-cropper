@@ -15,6 +15,7 @@ import {
 } from "@/utils/sessionStorage";
 
 import { useDragDrop } from "@/hooks/useDragDrop";
+import { usePaste } from "@/hooks/usePaste";
 import { CropHeader } from "./components/CropHeader";
 import { CropSidebar } from "./components/CropSidebar";
 import { CropPreviewModal } from "./components/CropPreviewModal";
@@ -331,6 +332,8 @@ export function CropPage() {
     };
     reader.readAsDataURL(file);
   }, []);
+
+  usePaste({ onFilePaste: loadNewImage });
 
   const { isDragging, dragProps } = useDragDrop({
     onFileDrop: loadNewImage,

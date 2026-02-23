@@ -1,6 +1,7 @@
 import { useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { useDragDrop } from "@/hooks/useDragDrop";
+import { usePaste } from "@/hooks/usePaste";
 import { saveCropSession } from "@/utils/sessionStorage";
 import { Footer } from "./components/Footer";
 import { DragOverlay } from "./components/DragOverlay";
@@ -23,6 +24,8 @@ export function HomePage() {
     },
     [navigate],
   );
+
+  usePaste({ onFilePaste: processFile });
 
   const { isDragging, handlers } = useDragDrop({
     onFileDrop: processFile,
