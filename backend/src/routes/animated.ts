@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import multer from "multer";
 import { cropGif, checkGifsicle } from "../services/gifsicle.js";
-import { convertWebPToGif, checkFfmpeg } from "../services/ffmpeg.js";
+import { convertWebPToGif, checkImageMagick } from "../services/imagemagick.js";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -10,11 +10,11 @@ const SUPPORTED_TYPES = ["image/gif", "image/webp"];
 
 router.get("/health", async (_req: Request, res: Response) => {
   const gifsicle = await checkGifsicle();
-  const ffmpeg = await checkFfmpeg();
+  const imagemagick = await checkImageMagick();
   if (gifsicle) {
-    res.json({ status: "ok", gifsicle: true, ffmpeg });
+    res.json({ status: "ok", gifsicle: true, imagemagick });
   } else {
-    res.status(503).json({ status: "error", gifsicle: false, ffmpeg });
+    res.status(503).json({ status: "error", gifsicle: false, imagemagick });
   }
 });
 

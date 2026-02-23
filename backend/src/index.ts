@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 import gifRoutes from "./routes/gif.js";
 import animatedRoutes from "./routes/animated.js";
 import { checkGifsicle } from "./services/gifsicle.js";
-import { checkFfmpeg } from "./services/ffmpeg.js";
+import { checkImageMagick } from "./services/imagemagick.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FRONTEND_DIR = path.join(__dirname, "../../frontend/dist");
@@ -27,8 +27,8 @@ async function start() {
   const gifsicleAvailable = await checkGifsicle();
   if (!gifsicleAvailable) console.error("⚠️  gifsicle not found!");
 
-  const ffmpegAvailable = await checkFfmpeg();
-  if (!ffmpegAvailable) console.error("⚠️  ffmpeg not found! Animated WebP cropping will not work.");
+  const imageMagickAvailable = await checkImageMagick();
+  if (!imageMagickAvailable) console.error("⚠️  ImageMagick not found! Animated WebP cropping will not work.");
 
   app.listen(PORT, () => {
     console.log(`🚀 Crop Backend running on http://localhost:${PORT}`);

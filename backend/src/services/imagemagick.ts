@@ -12,12 +12,7 @@ export async function convertWebPToGif(inputBuffer: Buffer): Promise<Buffer> {
   try {
     await writeFile(inputPath, inputBuffer);
 
-    await runFfmpeg([
-      "-i", inputPath,
-      "-vf", "split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse",
-      "-loop", "0",
-      outputPath,
-    ]);
+    await runCommand("magick", [inputPath, outputPath]);
 
     return await readFile(outputPath);
   } finally {
@@ -28,34 +23,34 @@ export async function convertWebPToGif(inputBuffer: Buffer): Promise<Buffer> {
   }
 }
 
-function runFfmpeg(args: string[]): Promise<void> {
+function runCommand(cmd: string, args: string[]): Promise<void> {
   return new Promise((resolve, reject) => {
-    const process = spawn("ffmpeg", ["-y", ...args]);
+    const proc = spawn(cmd, args);
 
     let stderr = "";
 
-    process.stderr.on("data", (data) => {
-      stderr += data.toString();
+    proc.stderr.on("data", (data: unknown) => {
+      stderr += String(data);
     });
 
-    process.on("close", (code) => {
+    proc.on("close", (code: number | null) => {
       if (code === 0) {
         resolve();
       } else {
-        reject(new Error(`ffmpeg failed with code ${code}: ${stderr}`));
+        reject(new Error(`${cmd} failed with code ${code}: ${stderr}`));
       }
     });
 
-    process.on("error", (err) => {
-      reject(new Error(`Failed to spawn ffmpeg: ${err.message}`));
+    proc.on("error", (err: Error) => {
+      reject(new Error(`Failed to spawn ${cmd}: ${err.message}`));
     });
   });
 }
 
-export async function checkFfmpeg(): Promise<boolean> {
+export async function checkImageMagick(): Promise<boolean> {
   return new Promise((resolve) => {
-    const process = spawn("ffmpeg", ["-version"]);
-    process.on("close", (code) => resolve(code === 0));
-    process.on("error", () => resolve(false));
+    const proc = spawn("magick", ["-version"]);
+    proc.on("close", (code: number | null) => resolve(code === 0));
+    proc.on("error", () => resolve(false));
   });
 }

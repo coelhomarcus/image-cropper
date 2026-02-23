@@ -20,7 +20,7 @@ RUN npm run build
 # Stage 3: Production
 FROM node:22-alpine
 
-RUN apk add --no-cache gifsicle ffmpeg
+RUN apk add --no-cache gifsicle imagemagick
 
 WORKDIR /app
 
