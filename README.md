@@ -7,7 +7,7 @@
     </picture>
 </p>
 
-# Image Crop
+# Cropin
 
 Ferramenta simples e open-source para recortar imagens e GIFs animados.
 
